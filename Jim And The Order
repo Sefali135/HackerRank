@@ -1,0 +1,56 @@
+typedef struct {
+    int id;
+    int completion;
+} Order;
+
+
+int cmp(const void* a, const void* b) {
+    const Order* o1 = (const Order*)a;
+    const Order* o2 = (const Order*)b;
+
+    if (o1->completion != o2->completion) {
+        return o1->completion - o2->completion;
+    }
+
+    return o1->id - o2->id;
+}
+
+
+int* jimOrders(int orders_rows, int orders_columns, int** orders, int* result_count) {
+    Order* arr = malloc(orders_rows * sizeof(Order));
+    if (arr == NULL) {
+        *result_count = 0;
+        return NULL; 
+    }
+
+    
+    for (int i = 0; i < orders_rows; i++) {
+        arr[i].id = i + 1;
+        arr[i].completion = orders[i][0] + orders[i][1];
+    }
+
+    
+    qsort(arr, orders_rows, sizeof(Order), cmp);
+
+   
+    int* result = malloc(orders_rows * sizeof(int));
+    if (result == NULL) {
+        free(arr); // Free the temporary array before exiting.
+        *result_count = 0;
+        return NULL; // Handle memory allocation failure.
+    }
+
+    
+    for (int i = 0; i < orders_rows; i++) {
+        result[i] = arr[i].id;
+    }
+
+   
+    free(arr);
+    
+    // Set the count of elements in the result array.
+    *result_count = orders_rows;
+
+    return result;
+}
+
