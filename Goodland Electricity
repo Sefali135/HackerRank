@@ -1,0 +1,30 @@
+int pylons(int k, int arr_count, int* arr) {
+    int count = 0;
+    int i = 0;
+
+    while (i < arr_count) {
+        int plant_pos = -1;
+        int search_start = i + k - 1;
+       
+        if (search_start >= arr_count) {
+            search_start = arr_count - 1;
+        }
+
+        for (int j = search_start; j >= 0 && j >= i - k + 1; j--) {
+            if (arr[j] == 1) {
+                plant_pos = j;
+                break;
+            }
+        }
+
+        if (plant_pos == -1 || plant_pos < i - k + 1) {
+            return -1;
+        }
+        
+        count++;
+       
+        i = plant_pos + k;
+    }
+
+    return count;
+}
