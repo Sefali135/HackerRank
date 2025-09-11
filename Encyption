@@ -1,0 +1,45 @@
+char* encryption(char* s) {
+    int len = 0;
+    // First, remove spaces by compacting the string
+    for (int i = 0; s[i]; i++) {
+        if (s[i] != ' ') {
+            s[len++] = s[i];
+        }
+    }
+    s[len] = '\0';
+
+    // Calculate the dimensions of the grid
+    double sqrt_len = sqrt(len);
+    int rows = (int)floor(sqrt_len);
+    int cols = (int)ceil(sqrt_len);
+
+    // If rows * cols is not enough, add an extra row
+    if (rows * cols < len) {
+        rows++;
+    }
+
+    // Allocate memory for the result string. It will have length + (cols - 1) spaces + 1 for null terminator
+    int result_size = len + (cols > 0 ? cols - 1 : 0) + 1;
+    char* result = malloc(result_size * sizeof(char));
+    if (!result) {
+        return NULL; // Handle memory allocation failure
+    }
+    int pos = 0;
+
+    // Read the grid column by column to form the encrypted string
+    for (int c = 0; c < cols; c++) {
+        for (int r = 0; r < rows; r++) {
+            // Calculate the 1D index from the 2D grid coordinates (row, col)
+            int idx = r * cols + c;
+            if (idx < len) {
+                result[pos++] = s[idx];
+            }
+        }
+        // Add a space between columns, but not after the last one
+        if (c < cols - 1) {
+            result[pos++] = ' ';
+        }
+    }
+    result[pos] = '\0';
+    return result;
+}
