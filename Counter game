@@ -1,0 +1,17 @@
+string counterGame(long n) {
+    int cnt = 0;
+    while (n > 1) {
+        if ((n & (n - 1)) == 0) {
+            n >>= 1;
+        } else {
+            long p = 1;
+            while (p << 1 < n) {
+                p <<= 1;
+            }
+            n -= p;
+        }
+        cnt++;
+    }
+    return (cnt % 2 == 0) ? "Richard" : "Louise";
+
+}
