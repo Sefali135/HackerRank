@@ -1,0 +1,78 @@
+// Comparison function for ascending order (for qsort and bsearch)
+int compareAsc(const void* a, const void* b) {
+    return *(const int*)a - *(const int*)b;
+}
+
+// Comparison function for descending order (for qsort)
+int compareDesc(const void* a, const void* b) {
+    return *(const int*)b - *(const int*)a;  // Note: For bsearch on descending array, we'll use this
+}
+
+// Function to count the number of swaps needed for a given target array
+int countSwaps(int arr[], int target[], int n, int (*compareFunc)(const void*, const void*)) {
+    int* p = (int*)malloc(n * sizeof(int));  // Array to store the permutation
+    if (p == NULL) {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(1);
+    }
+
+    for (int j = 0; j < n; j++) {
+        // Use bsearch to find the index of arr[j] in target
+        int* result = (int*)bsearch(&arr[j], target, n, sizeof(int), compareFunc);
+        if (result != NULL) {
+            // Calculate the index: result - target gives the offset
+            p[j] = (int)(result - target);  // Index in target array
+        } else {
+            // This shouldn't happen since all elements are distinct and present
+            fprintf(stderr, "Element not found in target array\n");
+            free(p);
+            exit(1);
+        }
+    }
+
+    char* visited = (char*)calloc(n, sizeof(char));  // Visited array (0 = false)
+    if (visited == NULL) {
+        fprintf(stderr, "Memory allocation failed\n");
+        free(p);
+        exit(1);
+    }
+
+    int cycles = 0;
+    for (int i = 0; i < n; i++) {
+        if (!visited[i]) {
+            cycles++;  // Start of a new cycle
+            int j = i;
+            while (!visited[j]) {
+                visited[j] = 1;  // Mark as visited
+                j = p[j];        // Move to next in cycle
+            }
+        }
+    }
+
+    free(p);
+    free(visited);
+    return n - cycles;  // Number of swaps
+}
+
+int lilysHomework(int arr[], int n) {
+    int* sortedAsc = (int*)malloc(n * sizeof(int));
+    int* sortedDesc = (int*)malloc(n * sizeof(int));
+    if (sortedAsc == NULL || sortedDesc == NULL) {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(1);
+    }
+
+    memcpy(sortedAsc, arr, n * sizeof(int));
+    qsort(sortedAsc, n, sizeof(int), compareAsc);  // Sort ascending
+
+    memcpy(sortedDesc, arr, n * sizeof(int));
+    qsort(sortedDesc, n, sizeof(int), compareDesc);  // Sort descending
+
+    int swapsAsc = countSwaps(arr, sortedAsc, n, compareAsc);  // Use ascending comparison
+    int swapsDesc = countSwaps(arr, sortedDesc, n, compareDesc);  // Use descending comparison
+
+    free(sortedAsc);
+    free(sortedDesc);
+
+    return swapsAsc < swapsDesc ? swapsAsc : swapsDesc;  // Return the minimum
+}
