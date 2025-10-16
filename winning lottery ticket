@@ -1,0 +1,42 @@
+int get_mask(const char* ticket_id) {
+    int mask = 0;
+    for (int i = 0; ticket_id[i] != '\0'; i++) {
+        int digit = ticket_id[i] - '0';
+        mask |= (1 << digit);
+    }
+    return mask;
+}
+
+long long winningLotteryTicket(int n, char** tickets) {
+    int mask_counts[1024] = {0};
+
+    for (int i = 0; i < n; i++) {
+        int mask = get_mask(tickets[i]);
+        mask_counts[mask]++;
+    }
+    
+    long long winning_pairs_count = 0;
+ 
+    const int ALL_DIGITS_MASK = 1023; 
+    
+    for (int M1 = 0; M1 <= ALL_DIGITS_MASK; M1++) {
+        for (int M2 = M1; M2 <= ALL_DIGITS_MASK; M2++) {
+           
+            if ((M1 | M2) == ALL_DIGITS_MASK) {
+                
+                if (M1 == M2) {
+                    long long count = (long long)mask_counts[M1];
+                    winning_pairs_count += (count * (count - 1)) / 2;
+                } 
+               
+                else {
+                    long long count1 = (long long)mask_counts[M1];
+                    long long count2 = (long long)mask_counts[M2];
+                    winning_pairs_count += count1 * count2;
+                }
+            }
+        }
+    }
+    
+    return winning_pairs_count;
+}
