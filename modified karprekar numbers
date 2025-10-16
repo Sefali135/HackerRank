@@ -1,0 +1,52 @@
+int getDigits(int n) {
+    if (n == 0) return 1;  
+    int digits = 0;
+    while (n > 0) {
+        digits++;
+        n /= 10;
+    }
+    return digits;
+}
+
+bool isKaprekar(int n) {
+    if (n <= 0) return false;
+    
+    int d = getDigits(n);
+    long long square = (long long)n * n;  
+    char sqStr[20]; 
+    sprintf(sqStr, "%lld", square);
+    int len = strlen(sqStr);
+    
+    char lStr[20] = {0}; 
+    char rStr[20] = {0}; 
+    
+    if (len > d) {
+        strncpy(lStr, sqStr, len - d);
+        lStr[len - d] = '\0';  
+        strcpy(rStr, sqStr + (len - d));
+    } else {
+        strcpy(lStr, "");
+        strcpy(rStr, sqStr);
+    }
+    
+    long long lNum = (strlen(lStr) > 0) ? atoll(lStr) : 0;
+    long long rNum = atoll(rStr);
+    
+    return (lNum + rNum) == (long long)n;
+}
+
+
+void kaprekarNumbers(int p, int q) {
+    int count = 0;  
+    for (int i = p; i <= q; i++) {
+        if (isKaprekar(i)) {
+            printf("%d ", i);
+            count++;
+        }
+    }
+    
+    if (count == 0) {
+        printf("INVALID RANGE");
+    }
+    printf("\n");  
+}
