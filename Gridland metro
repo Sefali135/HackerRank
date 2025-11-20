@@ -1,0 +1,53 @@
+long long gridlandMetro(int n, int m, int k, vector<vector<int>> track) {
+    long long total_cells = (long long)n * m;
+    
+    map<int, vector<pair<int, int>>> tracks_by_row;
+    
+    for (const auto& t : track) {
+        int r = t[0];
+        int c1 = t[1];
+        int c2 = t[2];
+        tracks_by_row[r].push_back({c1, c2});
+    }
+    
+    long long total_tracked_cells = 0;
+    
+    for (auto const& [row_r, segments] : tracks_by_row) {
+        vector<pair<int, int>> current_segments = segments;
+        
+        sort(current_segments.begin(), current_segments.end());
+        
+        vector<pair<int, int>> merged_intervals;
+        
+        if (current_segments.empty()) {
+            continue;
+        }
+        
+        int start = current_segments[0].first;
+        int end = current_segments[0].second;
+        
+        for (size_t i = 1; i < current_segments.size(); ++i) {
+            int next_start = current_segments[i].first;
+            int next_end = current_segments[i].second;
+            
+            if (next_start <= end + 1) {
+                end = max(end, next_end);
+            } else {
+                merged_intervals.push_back({start, end});
+                start = next_start;
+                end = next_end;
+            }
+        }
+        
+        merged_intervals.push_back({start, end});
+        
+        long long row_tracked_cells = 0;
+        for (const auto& interval : merged_intervals) {
+            row_tracked_cells += (long long)interval.second - interval.first + 1;
+        }
+        
+        total_tracked_cells += row_tracked_cells;
+    }
+    
+    return total_cells - total_tracked_cells;
+}
