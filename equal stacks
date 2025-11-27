@@ -1,0 +1,61 @@
+int max(int a, int b, int c) {
+    if (a >= b && a >= c) return a;
+    if (b >= a && b >= c) return b;
+    return c;
+}
+
+
+int equalStacks(int h1_count, int* h1, int h2_count, int* h2, int h3_count, int* h3) {
+    int* s1 = (int*)malloc((h1_count + 1) * sizeof(int));
+    int* s2 = (int*)malloc((h2_count + 1) * sizeof(int));
+    int* s3 = (int*)malloc((h3_count + 1) * sizeof(int));
+
+    s1[h1_count] = 0;
+    s2[h2_count] = 0;
+    s3[h3_count] = 0;
+    
+    for (int i = h1_count - 1; i >= 0; i--) {
+        s1[i] = h1[i] + s1[i + 1];
+    }
+    for (int i = h2_count - 1; i >= 0; i--) {
+        s2[i] = h2[i] + s2[i + 1];
+    }
+    for (int i = h3_count - 1; i >= 0; i--) {
+        s3[i] = h3[i] + s3[i + 1];
+    }
+
+    int p1 = 0;
+    int p2 = 0;
+    int p3 = 0;
+    
+    int max_p1 = h1_count;
+    int max_p2 = h2_count;
+    int max_p3 = h3_count;
+
+    while (s1[p1] != s2[p2] || s2[p2] != s3[p3]) {
+        if (p1 >= max_p1 || p2 >= max_p2 || p3 >= max_p3) {
+            free(s1);
+            free(s2);
+            free(s3);
+            return 0;
+        }
+
+        int current_max_height = max(s1[p1], s2[p2], s3[p3]);
+
+        if (s1[p1] == current_max_height) {
+            p1++;
+        } else if (s2[p2] == current_max_height) {
+            p2++;
+        } else if (s3[p3] == current_max_height) {
+            p3++;
+        }
+    }
+    
+    int result = s1[p1];
+
+    free(s1);
+    free(s2);
+    free(s3);
+
+    return result;
+}
